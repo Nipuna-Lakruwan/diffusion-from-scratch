@@ -76,20 +76,26 @@ $\alpha_t = 1 - \beta_t$, $\bar\alpha_t = \prod_{s \le t} \alpha_s$.
 
 Forward process, one step and the jump to step *t*:
 
-$$q(x_t \mid x_{t-1}) = \mathcal N\big(\sqrt{1-\beta_t}\,x_{t-1},\ \beta_t I\big), \qquad
-x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon,\ \ \epsilon \sim \mathcal N(0, I)$$
+```math
+q(x_t \mid x_{t-1}) = \mathcal N\big(\sqrt{1-\beta_t}\,x_{t-1},\ \beta_t I\big), \qquad
+x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon,\ \ \epsilon \sim \mathcal N(0, I)
+```
 
 Training loss (the "simple" DDPM objective):
 
-$$\mathcal L = \mathbb E_{x_0, t, \epsilon}\ \big\|\epsilon - \epsilon_\theta(x_t, t)\big\|^2$$
+```math
+\mathcal L = \mathbb E_{x_0, t, \epsilon}\ \big\|\epsilon - \epsilon_\theta(x_t, t)\big\|^2
+```
 
 Sampling, from $t = T$ down to 1, with $z \sim \mathcal N(0, I)$ and $\sigma_t^2 = \beta_t$:
 
-$$x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\Big(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}}\,\epsilon_\theta(x_t, t)\Big) + \sigma_t z$$
+```math
+x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\Big(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}}\,\epsilon_\theta(x_t, t)\Big) + \sigma_t z
+```
 
 DDIM (deterministic, same trained network, any number of steps):
-$\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t}\,\epsilon_\theta)/\sqrt{\bar\alpha_t}$, then
-$x_{t'} = \sqrt{\bar\alpha_{t'}}\,\hat x_0 + \sqrt{1-\bar\alpha_{t'}}\,\epsilon_\theta$.
+$\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t}\ \epsilon_\theta)/\sqrt{\bar\alpha_t}$, then
+$x_{t'} = \sqrt{\bar\alpha_{t'}}\ \hat x_0 + \sqrt{1-\bar\alpha_{t'}}\ \epsilon_\theta$.
 
 ## Training
 
@@ -117,7 +123,7 @@ digit. Snapshots from epochs 1–10 were made with the buggy sampler described b
   network was fine. The bug was in DDIM with guidance: at noisy steps ($\bar\alpha_t \approx 10^{-4}$) the
   predicted $\hat x_0$ is clipped to $[-1, 1]$, but the update still used the *unclipped* $\epsilon$.
   Guidance (multiplying $\epsilon$ differences by $1 + w$) made the mismatch explode: 5% of the digits
-  were right. Recomputing $\epsilon = (x_t - \sqrt{\bar\alpha_t}\,\hat x_0)/\sqrt{1-\bar\alpha_t}$ after
+  were right. Recomputing $\epsilon = (x_t - \sqrt{\bar\alpha_t}\ \hat x_0)/\sqrt{1-\bar\alpha_t}$ after
   clipping fixed it: 100% with guidance.
 - **With few steps, scale the noise schedule.** The usual $\beta_T = 0.02$ is meant for $T = 1000$. At
   $T = 400$ it leaves $\bar\alpha_T \approx 0.02$, so the "pure noise" at the start still contains a faint
