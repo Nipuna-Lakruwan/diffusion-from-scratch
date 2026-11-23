@@ -157,10 +157,6 @@ uv run python src/figures.py                # every figure and GIF in results/
 uv run pytest
 ```
 
-## Resume line
-
-> Implemented a class-conditional denoising diffusion model (DDPM + DDIM, U-Net with self-attention, classifier-free guidance) from scratch in PyTorch and trained it on an 8 GB M1 laptop; with guidance, an independent classifier reads the requested digit in 99.95% of 2000 samples, and DDIM sampling is 8× faster than DDPM at similar quality.
-
 ## References
 
 - Ho, Jain, Abbeel, *Denoising Diffusion Probabilistic Models*, NeurIPS 2020.
